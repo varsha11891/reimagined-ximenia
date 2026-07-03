@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Screener Metrics Playground</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
@@ -21,7 +21,7 @@
         </header>
 
         <!-- Threshold Control Panel -->
-        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200 mb-8">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex-1">
                     <label for="thresholdSlider" class="block font-semibold text-slate-900 mb-1">
@@ -30,9 +30,9 @@
                     <p class="text-sm text-slate-500">Candidates with an AI Score &ge; threshold are <strong class="text-emerald-600">Shortlisted</strong>. Others are <strong class="text-rose-600">Rejected</strong>.</p>
                 </div>
                 <div class="w-full md:w-2/3 flex items-center gap-4">
-                    <span class="text-sm text-slate-400 font-medium">0.00 (Lenient)</span>
-                    <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
-                    <span class="text-sm text-slate-400 font-medium">1.00 (Strict)</span>
+                    <span class="text-sm text-slate-600 font-semibold">0.00 (Lenient)</span>
+                    <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2.5 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
+                    <span class="text-sm text-slate-600 font-semibold">1.00 (Strict)</span>
                 </div>
             </div>
         </div>
@@ -91,66 +91,101 @@
         <!-- Matrix & Data Distribution -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- Confusion Matrix Panel -->
-            <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
-                <h3 class="font-bold text-lg text-slate-900 mb-4">Confusion Matrix Breakdown</h3>
-                
-                <div class="grid grid-cols-2 gap-3 font-medium text-center">
-                    <!-- True Positive -->
-                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-emerald-900">
-                        <div class="text-2xl font-bold" id="matrixTP">0</div>
-                        <div class="text-xs font-semibold mt-1">True Positives (TP)</div>
-                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Qualified & Shortlisted</p>
-                    </div>
+            <!-- Beautifully Refactored Confusion Matrix Panel -->
+            <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-lg text-slate-900 mb-6">Interactive Confusion Matrix</h3>
                     
-                    <!-- False Positive -->
-                    <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl text-rose-900">
-                        <div class="text-2xl font-bold" id="matrixFP">0</div>
-                        <div class="text-xs font-semibold mt-1">False Positives (FP)</div>
-                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Unqualified but Shortlisted</p>
-                    </div>
-                    
-                    <!-- False Negative -->
-                    <div class="bg-orange-50 border border-orange-200 p-4 rounded-xl text-orange-900">
-                        <div class="text-2xl font-bold" id="matrixFN">0</div>
-                        <div class="text-xs font-semibold mt-1">False Negatives (FN)</div>
-                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Qualified but Rejected</p>
-                    </div>
-                    
-                    <!-- True Negative -->
-                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-slate-700">
-                        <div class="text-2xl font-bold" id="matrixTN">0</div>
-                        <div class="text-xs font-semibold mt-1">True Negatives (TN)</div>
-                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Unqualified & Rejected</p>
+                    <!-- Structural Matrix Grid -->
+                    <div class="grid grid-cols-[100px_1fr_1fr] gap-x-3 gap-y-3 items-center">
+                        <!-- Top Row: Blank Corner Label & Actual Header spanning across columns -->
+                        <div></div>
+                        <div class="col-span-2 text-center text-[11px] font-bold uppercase tracking-wider text-slate-400 pb-1 border-b border-slate-100">
+                            Actual Quality (Ground Truth)
+                        </div>
+
+                        <!-- Column Labels Row -->
+                        <div></div>
+                        <div class="text-center text-xs font-semibold text-slate-600 bg-slate-50/80 py-1.5 rounded-lg border border-slate-100">
+                            Qualified
+                        </div>
+                        <div class="text-center text-xs font-semibold text-slate-600 bg-slate-50/80 py-1.5 rounded-lg border border-slate-100">
+                            Unqualified
+                        </div>
+
+                        <!-- Row 1: AI Shortlist (Predicted Positive) -->
+                        <div class="text-right text-[11px] font-bold uppercase tracking-wider text-slate-500 pr-2 border-r border-slate-200/80 py-4 leading-tight">
+                            Predicted<br>
+                            <span class="text-emerald-600 font-extrabold">Shortlist</span><br>
+                            <span class="text-[9px] font-medium text-slate-400 lowercase">(positive)</span>
+                        </div>
+                        
+                        <!-- TP Cell -->
+                        <div class="bg-emerald-50/40 border border-emerald-100 p-4 rounded-xl text-center hover:bg-emerald-50/80 transition-colors">
+                            <div class="text-3xl font-bold text-emerald-800" id="matrixTP">0</div>
+                            <div class="text-xs font-semibold text-emerald-900 mt-1">True Positives</div>
+                            <p class="text-[10px] text-emerald-700/80 mt-0.5 leading-tight">Correct Choice</p>
+                        </div>
+                        
+                        <!-- FP Cell -->
+                        <div class="bg-rose-50/40 border border-rose-100 p-4 rounded-xl text-center hover:bg-rose-50/80 transition-colors">
+                            <div class="text-3xl font-bold text-rose-800" id="matrixFP">0</div>
+                            <div class="text-xs font-semibold text-rose-900 mt-1">False Positives</div>
+                            <p class="text-[10px] text-rose-700/80 mt-0.5 leading-tight">Type I Error</p>
+                        </div>
+
+                        <!-- Row 2: AI Reject (Predicted Negative) -->
+                        <div class="text-right text-[11px] font-bold uppercase tracking-wider text-slate-500 pr-2 border-r border-slate-200/80 py-4 leading-tight">
+                            Predicted<br>
+                            <span class="text-rose-600 font-extrabold">Reject</span><br>
+                            <span class="text-[9px] font-medium text-slate-400 lowercase">(negative)</span>
+                        </div>
+                        
+                        <!-- FN Cell -->
+                        <div class="bg-orange-50/40 border border-orange-100 p-4 rounded-xl text-center hover:bg-orange-50/80 transition-colors">
+                            <div class="text-3xl font-bold text-orange-800" id="matrixFN">0</div>
+                            <div class="text-xs font-semibold text-orange-900 mt-1">False Negatives</div>
+                            <p class="text-[10px] text-orange-700/80 mt-0.5 leading-tight">Type II Error</p>
+                        </div>
+                        
+                        <!-- TN Cell -->
+                        <div class="bg-slate-50/40 border border-slate-200 p-4 rounded-xl text-center hover:bg-slate-50/80 transition-colors">
+                            <div class="text-3xl font-bold text-slate-700" id="matrixTN">0</div>
+                            <div class="text-xs font-semibold text-slate-800 mt-1">True Negatives</div>
+                            <p class="text-[10px] text-slate-600/80 mt-0.5 leading-tight">Correct Exclusion</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 leading-relaxed">
-                    <span class="font-bold text-slate-800">Operational Insight:</span> 
+                <!-- Dynamic Real-time Commentary -->
+                <div class="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 leading-relaxed">
+                    <span class="font-bold text-slate-800">Operational Decision Impact:</span> 
                     <span id="dynamicInsight">Adjusting the slider will update these metrics instantly. See how selecting a higher threshold changes errors from False Positives to False Negatives!</span>
                 </div>
             </div>
 
             <!-- Candidate Pool Table Panel -->
-            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
-                    <h3 class="font-bold text-lg text-slate-900">Live Mock Candidate Pool</h3>
-                    <span class="text-xs font-semibold bg-slate-100 px-2.5 py-1 rounded-full text-slate-600"><span id="poolCount">0</span> Resumes</span>
-                </div>
-                <div class="overflow-x-auto max-h-[360px] overflow-y-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
-                                <th class="py-3 px-4">Candidate</th>
-                                <th class="py-3 px-4">True Skill</th>
-                                <th class="py-3 px-4">AI Score</th>
-                                <th class="py-3 px-4">System Decision</th>
-                            </tr>
-                        </thead>
-                        <tbody id="candidateTableBody" class="text-sm divide-y divide-slate-100">
-                            <!-- Injected by JS -->
-                        </tbody>
-                    </table>
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                <div>
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                        <h3 class="font-bold text-lg text-slate-900">Live Mock Candidate Pool</h3>
+                        <span class="text-xs font-semibold bg-slate-100 px-2.5 py-1 rounded-full text-slate-600"><span id="poolCount">0</span> Resumes</span>
+                    </div>
+                    <div class="overflow-x-auto max-h-[380px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3 px-4">Candidate</th>
+                                    <th class="py-3 px-4">True Skill</th>
+                                    <th class="py-3 px-4">AI Score</th>
+                                    <th class="py-3 px-4">System Decision</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candidateTableBody" class="text-sm divide-y divide-slate-100">
+                                <!-- Injected dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -159,7 +194,7 @@
 
     <!-- Simulation Script Logic -->
     <script>
-        // Real-world distribution sample mimicking standard resume scoring curves
+        // Real-world sample distribution reflecting standard qualification-vs-resume score curves
         const candidates = [
             { name: "Sarah Jenkins", qualified: true, score: 0.95 },
             { name: "James Wilson", qualified: true, score: 0.91 },
@@ -178,6 +213,15 @@
         const slider = document.getElementById('thresholdSlider');
         const thresholdValDisplay = document.getElementById('thresholdVal');
         const tableBody = document.getElementById('candidateTableBody');
+        
+        // Grab metrics selectors for fast dynamic interactions
+        const metricsTexts = [
+            document.getElementById('precisionMetric'),
+            document.getElementById('recallMetric'),
+            document.getElementById('f1Metric'),
+            document.getElementById('accuracyMetric')
+        ];
+        
         document.getElementById('poolCount').innerText = candidates.length;
 
         function updateSimulation() {
@@ -187,15 +231,15 @@
             let tp = 0, fp = 0, fn = 0, tn = 0;
             let tableHTML = '';
 
+            // Map and classify candidates based on active slider position
             candidates.forEach(c => {
                 const isShortlisted = c.score >= threshold;
                 let classification = '';
-                let badgeClass = '';
 
-                if (isShortlisted && c.qualified) { tp++; classification = 'True Positive'; badgeClass = 'bg-emerald-100 text-emerald-800 font-semibold'; }
-                else if (isShortlisted && !c.qualified) { fp++; classification = 'False Positive'; badgeClass = 'bg-rose-100 text-rose-800 font-semibold'; }
-                else if (!isShortlisted && c.qualified) { fn++; classification = 'False Negative'; badgeClass = 'bg-orange-100 text-orange-800 font-semibold'; }
-                else { tn++; classification = 'True Negative'; badgeClass = 'bg-slate-100 text-slate-700'; }
+                if (isShortlisted && c.qualified) { tp++; classification = 'True Positive'; }
+                else if (isShortlisted && !c.qualified) { fp++; classification = 'False Positive'; }
+                else if (!isShortlisted && c.qualified) { fn++; classification = 'False Negative'; }
+                else { tn++; classification = 'True Negative'; }
 
                 const decisionText = isShortlisted ? 'Shortlist' : 'Reject';
                 const decisionBadge = isShortlisted ? 'bg-emerald-500 text-white' : 'bg-slate-300 text-slate-700';
@@ -216,27 +260,28 @@
                 `;
             });
 
+            // Clean DOM replacement to prevent flicker while sliding
             tableBody.innerHTML = tableHTML;
 
-            // Update confusion matrix visuals
+            // Direct innerText update on active quadrants
             document.getElementById('matrixTP').innerText = tp;
             document.getElementById('matrixFP').innerText = fp;
             document.getElementById('matrixFN').innerText = fn;
             document.getElementById('matrixTN').innerText = tn;
 
-            // Calculate Mathematical Performance Metrics
+            // Compute metrics
             const precision = (tp + fp) > 0 ? (tp / (tp + fp)) * 100 : 0;
             const recall = (tp + fn) > 0 ? (tp / (tp + fn)) * 100 : 0;
             const accuracy = ((tp + tn) / candidates.length) * 100;
             const f1 = (precision + recall) > 0 ? 2 * ((precision * recall) / (precision + recall)) : 0;
 
-            // Update UI elements
-            document.getElementById('precisionMetric').innerText = precision.toFixed(1) + '%';
-            document.getElementById('recallMetric').innerText = recall.toFixed(1) + '%';
-            document.getElementById('f1Metric').innerText = f1.toFixed(1) + '%';
-            document.getElementById('accuracyMetric').innerText = accuracy.toFixed(1) + '%';
+            // Write metrics values to cards
+            metricsTexts[0].innerText = precision.toFixed(1) + '%';
+            metricsTexts[1].innerText = recall.toFixed(1) + '%';
+            metricsTexts[2].innerText = f1.toFixed(1) + '%';
+            metricsTexts[3].innerText = accuracy.toFixed(1) + '%';
 
-            // Custom Dynamic Copywriters for Real-world explanations
+            // Real-time recruiting commentary updates based on threshold zones
             let insight = "";
             if (threshold >= 0.85) {
                 insight = "<strong>High Threshold Mode:</strong> Your screener is incredibly risk-averse. Recruiter interview pipelines are perfectly clean (High Precision), but you are missing out on highly capable candidates who just missed the cut (High False Negatives/Low Recall).";
@@ -248,7 +293,27 @@
             document.getElementById('dynamicInsight').innerHTML = insight;
         }
 
+        // Active dragging animations (changes color palette of metrics to trigger UI engagement)
+        slider.addEventListener('mousedown', () => {
+            metricsTexts.forEach(el => el.classList.add('text-indigo-600'));
+        });
+        
+        slider.addEventListener('mouseup', () => {
+            metricsTexts.forEach(el => el.classList.remove('text-indigo-600'));
+        });
+        
+        slider.addEventListener('touchstart', () => {
+            metricsTexts.forEach(el => el.classList.add('text-indigo-600'));
+        });
+        
+        slider.addEventListener('touchend', () => {
+            metricsTexts.forEach(el => el.classList.remove('text-indigo-600'));
+        });
+
+        // Event listener 'input' updates continuously on drag frame-by-frame
         slider.addEventListener('input', updateSimulation);
+        
+        // Render system values on mount
         window.addEventListener('DOMContentLoaded', updateSimulation);
     </script>
 </body>
