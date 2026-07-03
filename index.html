@@ -37,7 +37,7 @@
             <!-- Hand-drawn Scribble turning to Order illustration (direct homage to order in chaos.jpg) -->
             <div class="flex-shrink-0 bg-white/50 p-3 rounded-2xl border border-slate-200/60 shadow-xs max-w-sm w-full md:w-auto">
                 <div class="text-[11px] font-bold tracking-wider uppercase text-slate-400 text-center mb-1">Concept: Screener Pipeline</div>
-                <svg viewBox="0 0 400 100" class="w-full h-24 max-w-md mx-auto">
+                <svg viewBox="0 0 450 100" class="w-full h-24 max-w-md mx-auto">
                     <!-- Scribbled Chaotic Pool -->
                     <path d="M 20 50 Q 15 20 40 30 T 60 70 T 30 60 T 50 40 T 70 50 T 90 60 T 80 30 T 100 50" fill="none" stroke="#64748b" stroke-width="1.8" stroke-linecap="round"/>
                     <path d="M 30 45 Q 25 15 50 25 T 70 65 T 40 55 T 60 35 T 80 45 T 100 55 T 90 25 T 110 45" fill="none" stroke="#94a3b8" stroke-width="1" stroke-linecap="round"/>
@@ -52,32 +52,43 @@
                     <text x="207" y="65" class="handwritten" font-size="12" fill="#4f46e5" text-anchor="middle">θ = 0.80</text>
                     
                     <!-- Structured Order Output -->
-                    <path d="M 250 35 L 340 35 M 250 50 L 340 50 M 250 65 L 340 65" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
-                    <circle cx="345" cy="35" r="3.5" fill="#059669"/>
-                    <circle cx="345" cy="50" r="3.5" fill="#059669"/>
-                    <circle cx="345" cy="65" r="3.5" fill="#059669"/>
-                    <text x="358" y="54" class="handwritten" font-size="16" font-weight="bold" fill="#059669">Shortlist!</text>
+                    <path d="M 250 35 L 330 35 M 250 50 L 330 50 M 250 65 L 330 65" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="335" cy="35" r="3.5" fill="#059669"/>
+                    <circle cx="335" cy="50" r="3.5" fill="#059669"/>
+                    <circle cx="335" cy="65" r="3.5" fill="#059669"/>
+                    <text x="345" y="54" class="handwritten" font-size="16" font-weight="bold" fill="#059669" text-anchor="start">Shortlist!</text>
                 </svg>
             </div>
         </header>
 
         <!-- Threshold Control Panel -->
         <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200 mb-8 relative overflow-hidden">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div class="flex-1">
-                    <div class="flex items-center gap-2">
+            <div class="flex flex-col gap-6">
+                <!-- Label and Experiment Tip Row -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                    <div>
                         <label for="thresholdSlider" class="block font-bold text-slate-900 text-lg">
                             Screening Score Threshold: <span id="thresholdVal" class="text-indigo-700 font-extrabold text-2xl tracking-tight">0.80</span>
                         </label>
-                        <!-- Sketched indicator bracket -->
-                        <span class="handwritten text-indigo-600 text-xl font-bold ml-2 hidden sm:inline">&larr; Slide to experiment!</span>
+                        <p class="text-sm text-slate-500 mt-1">Candidates with an AI Score &ge; threshold are <strong class="text-emerald-600 font-semibold">Shortlisted</strong>. Others are <strong class="text-rose-600 font-semibold">Rejected</strong>.</p>
                     </div>
-                    <p class="text-sm text-slate-500 mt-1">Candidates with an AI Score &ge; threshold are <strong class="text-emerald-600 font-semibold">Shortlisted</strong>. Others are <strong class="text-rose-600 font-semibold">Rejected</strong>.</p>
+                    <!-- 'Slide to experiment' positioned nicely above the slider on desktop -->
+                    <div class="text-right hidden md:block">
+                        <span class="handwritten text-indigo-600 text-lg font-bold">Slide to experiment! &darr;</span>
+                    </div>
                 </div>
-                <div class="w-full md:w-2/3 flex items-center gap-4">
-                    <span class="text-sm text-slate-600 font-semibold">0.00 (Lenient)</span>
-                    <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2.5 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
-                    <span class="text-sm text-slate-600 font-semibold">1.00 (Strict)</span>
+
+                <!-- Slider Row -->
+                <div class="w-full">
+                    <!-- 'Slide to experiment' visible stacked on mobile screens -->
+                    <div class="block md:hidden mb-2 text-left">
+                        <span class="handwritten text-indigo-600 text-sm font-bold">Slide to experiment! &darr;</span>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-slate-600 font-semibold">0.00 (Lenient)</span>
+                        <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2.5 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
+                        <span class="text-sm text-slate-600 font-semibold">1.00 (Strict)</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -213,15 +224,15 @@
                         <!-- TP Cell -->
                         <div class="bg-emerald-50/40 border border-emerald-100 p-4 rounded-xl text-center hover:bg-emerald-50/80 transition-colors">
                             <div class="text-3xl font-bold text-emerald-800" id="matrixTP">0</div>
-                            <div class="text-xs font-semibold text-emerald-900 mt-1">True Positives</div>
-                            <p class="text-[10px] text-emerald-700/80 mt-0.5 leading-tight">Correct Choice</p>
+                            <div class="text-xs font-semibold text-emerald-900 mt-1">True Positives (TP)</div>
+                            <p class="text-[10px] text-emerald-700/80 mt-0.5 leading-tight">Qualified Person Shortlisted</p>
                         </div>
                         
                         <!-- FP Cell -->
                         <div class="bg-rose-50/40 border border-rose-100 p-4 rounded-xl text-center hover:bg-rose-50/80 transition-colors">
                             <div class="text-3xl font-bold text-rose-800" id="matrixFP">0</div>
-                            <div class="text-xs font-semibold text-rose-900 mt-1">False Positives</div>
-                            <p class="text-[10px] text-rose-700/80 mt-0.5 leading-tight">Type I Error</p>
+                            <div class="text-xs font-semibold text-rose-900 mt-1">False Positives (FP)</div>
+                            <p class="text-[10px] text-rose-700/80 mt-0.5 leading-tight">Unqualified Person Shortlisted</p>
                         </div>
 
                         <!-- Row 2: AI Reject (Predicted Negative) -->
@@ -234,15 +245,15 @@
                         <!-- FN Cell -->
                         <div class="bg-orange-50/40 border border-orange-100 p-4 rounded-xl text-center hover:bg-orange-50/80 transition-colors">
                             <div class="text-3xl font-bold text-orange-800" id="matrixFN">0</div>
-                            <div class="text-xs font-semibold text-orange-900 mt-1">False Negatives</div>
-                            <p class="text-[10px] text-orange-700/80 mt-0.5 leading-tight">Type II Error</p>
+                            <div class="text-xs font-semibold text-orange-900 mt-1">False Negatives (FN)</div>
+                            <p class="text-[10px] text-orange-700/80 mt-0.5 leading-tight">Qualified Person Rejected</p>
                         </div>
                         
                         <!-- TN Cell -->
                         <div class="bg-slate-50/40 border border-slate-200 p-4 rounded-xl text-center hover:bg-slate-50/80 transition-colors">
                             <div class="text-3xl font-bold text-slate-700" id="matrixTN">0</div>
-                            <div class="text-xs font-semibold text-slate-800 mt-1">True Negatives</div>
-                            <p class="text-[10px] text-slate-600/80 mt-0.5 leading-tight">Correct Exclusion</p>
+                            <div class="text-xs font-semibold text-slate-800 mt-1">True Negatives (TN)</div>
+                            <p class="text-[10px] text-slate-600/80 mt-0.5 leading-tight">Unqualified Person Rejected</p>
                         </div>
                     </div>
                 </div>
@@ -293,7 +304,6 @@
                         </svg>
                         <strong>Engineering Priorities:</strong> Optimize F1 to balance resources.
                     </span>
-                    <span class="handwritten text-indigo-600 font-bold text-sm transform -rotate-1">AI x Products x People</span>
                 </div>
             </div>
 
