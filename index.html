@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Screener Metrics Playground</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-8 text-center md:text-left">
+            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">AI Resume Screener Simulator</h1>
+            <p class="text-slate-600 mt-2">An interactive playground to understand how classification thresholds affect Precision, Recall, and F1 Score in recruitment engineering.</p>
+        </header>
+
+        <!-- Threshold Control Panel -->
+        <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200 mb-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex-1">
+                    <label for="thresholdSlider" class="block font-semibold text-slate-900 mb-1">
+                        Screening Score Threshold: <span id="thresholdVal" class="text-indigo-600 font-bold text-xl">0.80</span>
+                    </label>
+                    <p class="text-sm text-slate-500">Candidates with an AI Score &ge; threshold are <strong class="text-emerald-600">Shortlisted</strong>. Others are <strong class="text-rose-600">Rejected</strong>.</p>
+                </div>
+                <div class="w-full md:w-2/3 flex items-center gap-4">
+                    <span class="text-sm text-slate-400 font-medium">0.00 (Lenient)</span>
+                    <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <span class="text-sm text-slate-400 font-medium">1.00 (Strict)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Precision Card -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-slate-500 tracking-wider uppercase">Precision</span>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 font-mono px-2 py-0.5 rounded">TP / (TP + FP)</span>
+                    </div>
+                    <div id="precisionMetric" class="text-3xl font-bold text-slate-900">0.0%</div>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><strong>Quality Focus:</strong> Out of all candidates your AI shortlisted, what % are actually qualified? High precision avoids wasting recruiter time on bad interviews.</p>
+                </div>
+            </div>
+
+            <!-- Recall Card -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-slate-500 tracking-wider uppercase">Recall</span>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 font-mono px-2 py-0.5 rounded">TP / (TP + FN)</span>
+                    </div>
+                    <div id="recallMetric" class="text-3xl font-bold text-slate-900">0.0%</div>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><strong>Quantity Focus:</strong> Out of all qualified talent in the pool, what % did the AI catch? High recall prevents missing out on star candidates.</p>
+                </div>
+            </div>
+
+            <!-- F1 Score Card -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-slate-500 tracking-wider uppercase">F1 Score</span>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 font-mono px-2 py-0.5 rounded">Harmonic Mean</span>
+                    </div>
+                    <div id="f1Metric" class="text-3xl font-bold text-slate-900">0.0%</div>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><strong>The Balance:</strong> Combines Precision and Recall. It penalizes extreme imbalances (e.g., if you shortlist everyone or no one).</p>
+                </div>
+            </div>
+
+            <!-- Accuracy Card -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-sm font-semibold text-slate-500 tracking-wider uppercase">Accuracy</span>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 font-mono px-2 py-0.5 rounded">Correct / Total</span>
+                    </div>
+                    <div id="accuracyMetric" class="text-3xl font-bold text-slate-900">0.0%</div>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed"><strong>Overall Right:</strong> What % of all system decisions (Shortlists + Rejections) were completely correct? Can be misleading if dataset is unbalanced.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matrix & Data Distribution -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Confusion Matrix Panel -->
+            <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+                <h3 class="font-bold text-lg text-slate-900 mb-4">Confusion Matrix Breakdown</h3>
+                
+                <div class="grid grid-cols-2 gap-3 font-medium text-center">
+                    <!-- True Positive -->
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-emerald-900">
+                        <div class="text-2xl font-bold" id="matrixTP">0</div>
+                        <div class="text-xs font-semibold mt-1">True Positives (TP)</div>
+                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Qualified & Shortlisted</p>
+                    </div>
+                    
+                    <!-- False Positive -->
+                    <div class="bg-rose-50 border border-rose-200 p-4 rounded-xl text-rose-900">
+                        <div class="text-2xl font-bold" id="matrixFP">0</div>
+                        <div class="text-xs font-semibold mt-1">False Positives (FP)</div>
+                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Unqualified but Shortlisted</p>
+                    </div>
+                    
+                    <!-- False Negative -->
+                    <div class="bg-orange-50 border border-orange-200 p-4 rounded-xl text-orange-900">
+                        <div class="text-2xl font-bold" id="matrixFN">0</div>
+                        <div class="text-xs font-semibold mt-1">False Negatives (FN)</div>
+                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Qualified but Rejected</p>
+                    </div>
+                    
+                    <!-- True Negative -->
+                    <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-slate-700">
+                        <div class="text-2xl font-bold" id="matrixTN">0</div>
+                        <div class="text-xs font-semibold mt-1">True Negatives (TN)</div>
+                        <p class="text-[11px] opacity-75 mt-1 leading-tight">Unqualified & Rejected</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600 leading-relaxed">
+                    <span class="font-bold text-slate-800">Operational Insight:</span> 
+                    <span id="dynamicInsight">Adjusting the slider will update these metrics instantly. See how selecting a higher threshold changes errors from False Positives to False Negatives!</span>
+                </div>
+            </div>
+
+            <!-- Candidate Pool Table Panel -->
+            <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
+                    <h3 class="font-bold text-lg text-slate-900">Live Mock Candidate Pool</h3>
+                    <span class="text-xs font-semibold bg-slate-100 px-2.5 py-1 rounded-full text-slate-600"><span id="poolCount">0</span> Resumes</span>
+                </div>
+                <div class="overflow-x-auto max-h-[360px] overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider border-b border-slate-200">
+                                <th class="py-3 px-4">Candidate</th>
+                                <th class="py-3 px-4">True Skill</th>
+                                <th class="py-3 px-4">AI Score</th>
+                                <th class="py-3 px-4">System Decision</th>
+                            </tr>
+                        </thead>
+                        <tbody id="candidateTableBody" class="text-sm divide-y divide-slate-100">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Simulation Script Logic -->
+    <script>
+        // Real-world distribution sample mimicking standard resume scoring curves
+        const candidates = [
+            { name: "Sarah Jenkins", qualified: true, score: 0.95 },
+            { name: "James Wilson", qualified: true, score: 0.91 },
+            { name: "Michael Chang", qualified: true, score: 0.88 },
+            { name: "Marcus Vance", qualified: true, score: 0.86 },
+            { name: "Amira Patel", qualified: false, score: 0.83 },
+            { name: "Liam O'Connor", qualified: false, score: 0.81 },
+            { name: "David Kim", qualified: true, score: 0.79 },
+            { name: "Elena Rostova", qualified: false, score: 0.72 },
+            { name: "Carlos Mendez", qualified: true, score: 0.68 },
+            { name: "Priya Sharma", qualified: true, score: 0.55 },
+            { name: "Chloe Dupont", qualified: false, score: 0.45 },
+            { name: "Aisha Yusuf", qualified: false, score: 0.21 }
+        ];
+
+        const slider = document.getElementById('thresholdSlider');
+        const thresholdValDisplay = document.getElementById('thresholdVal');
+        const tableBody = document.getElementById('candidateTableBody');
+        document.getElementById('poolCount').innerText = candidates.length;
+
+        function updateSimulation() {
+            const threshold = parseFloat(slider.value);
+            thresholdValDisplay.innerText = threshold.toFixed(2);
+
+            let tp = 0, fp = 0, fn = 0, tn = 0;
+            let tableHTML = '';
+
+            candidates.forEach(c => {
+                const isShortlisted = c.score >= threshold;
+                let classification = '';
+                let badgeClass = '';
+
+                if (isShortlisted && c.qualified) { tp++; classification = 'True Positive'; badgeClass = 'bg-emerald-100 text-emerald-800 font-semibold'; }
+                else if (isShortlisted && !c.qualified) { fp++; classification = 'False Positive'; badgeClass = 'bg-rose-100 text-rose-800 font-semibold'; }
+                else if (!isShortlisted && c.qualified) { fn++; classification = 'False Negative'; badgeClass = 'bg-orange-100 text-orange-800 font-semibold'; }
+                else { tn++; classification = 'True Negative'; badgeClass = 'bg-slate-100 text-slate-700'; }
+
+                const decisionText = isShortlisted ? 'Shortlist' : 'Reject';
+                const decisionBadge = isShortlisted ? 'bg-emerald-500 text-white' : 'bg-slate-300 text-slate-700';
+                const trueLabelBadge = c.qualified ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200';
+
+                tableHTML += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="py-3 px-4 font-medium text-slate-900">${c.name}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 text-xs rounded-md ${trueLabelBadge}">${c.qualified ? 'Qualified' : 'Unqualified'}</span>
+                        </td>
+                        <td class="py-3 px-4 font-mono font-semibold text-slate-600">${c.score.toFixed(2)}</td>
+                        <td class="py-3 px-4 flex items-center gap-2">
+                            <span class="px-2 py-0.5 text-xs font-bold rounded-md ${decisionBadge}">${decisionText}</span>
+                            <span class="text-[11px] text-slate-400 font-mono">(${classification})</span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableBody.innerHTML = tableHTML;
+
+            // Update confusion matrix visuals
+            document.getElementById('matrixTP').innerText = tp;
+            document.getElementById('matrixFP').innerText = fp;
+            document.getElementById('matrixFN').innerText = fn;
+            document.getElementById('matrixTN').innerText = tn;
+
+            // Calculate Mathematical Performance Metrics
+            const precision = (tp + fp) > 0 ? (tp / (tp + fp)) * 100 : 0;
+            const recall = (tp + fn) > 0 ? (tp / (tp + fn)) * 100 : 0;
+            const accuracy = ((tp + tn) / candidates.length) * 100;
+            const f1 = (precision + recall) > 0 ? 2 * ((precision * recall) / (precision + recall)) : 0;
+
+            // Update UI elements
+            document.getElementById('precisionMetric').innerText = precision.toFixed(1) + '%';
+            document.getElementById('recallMetric').innerText = recall.toFixed(1) + '%';
+            document.getElementById('f1Metric').innerText = f1.toFixed(1) + '%';
+            document.getElementById('accuracyMetric').innerText = accuracy.toFixed(1) + '%';
+
+            // Custom Dynamic Copywriters for Real-world explanations
+            let insight = "";
+            if (threshold >= 0.85) {
+                insight = "<strong>High Threshold Mode:</strong> Your screener is incredibly risk-averse. Recruiter interview pipelines are perfectly clean (High Precision), but you are missing out on highly capable candidates who just missed the cut (High False Negatives/Low Recall).";
+            } else if (threshold <= 0.60) {
+                insight = "<strong>Low Threshold Mode:</strong> Your screener catches almost all the talent (High Recall), but your HR team is screaming because they are swamped interviewing unqualified candidates who slipped through the screening cracks (High False Positives/Low Precision).";
+            } else {
+                insight = "<strong>Balanced Target Zone:</strong> Around the 0.75-0.80 threshold mark, the system balances recruiter scheduling capacity with talent pipeline yield, creating a more stable F1 Metric.";
+            }
+            document.getElementById('dynamicInsight').innerHTML = insight;
+        }
+
+        slider.addEventListener('input', updateSimulation);
+        window.addEventListener('DOMContentLoaded', updateSimulation);
+    </script>
+</body>
+</html>
