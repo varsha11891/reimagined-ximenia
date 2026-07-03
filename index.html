@@ -61,39 +61,86 @@
             </div>
         </header>
 
-        <!-- Threshold Control Panel -->
+        <!-- Threshold & Presets Control Panel -->
         <div class="bg-white p-6 rounded-2xl shadow-xs border border-slate-200 mb-8 relative overflow-hidden">
-            <div class="flex flex-col gap-6">
-                <!-- Label and Experiment Tip Row -->
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left Column: Manual Slider & Active Log -->
+                <div class="lg:col-span-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-slate-100 pb-6 lg:pb-0 lg:pr-8">
                     <div>
-                        <label for="thresholdSlider" class="block font-bold text-slate-900 text-lg">
-                            Screening Score Threshold: <span id="thresholdVal" class="text-indigo-700 font-extrabold text-2xl tracking-tight">0.80</span>
-                        </label>
-                        <p class="text-sm text-slate-500 mt-1">Candidates with an AI Score &ge; threshold are <strong class="text-emerald-600 font-semibold">Shortlisted</strong>. Others are <strong class="text-rose-600 font-semibold">Rejected</strong>.</p>
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                            <div>
+                                <label for="thresholdSlider" class="block font-bold text-slate-900 text-lg">
+                                    Screening Score Threshold: <span id="thresholdVal" class="text-indigo-700 font-extrabold text-2xl tracking-tight">0.80</span>
+                                </label>
+                                <p class="text-sm text-slate-500 mt-1">Candidates with an AI Score &ge; threshold are <strong class="text-emerald-600 font-semibold">Shortlisted</strong>. Others are <strong class="text-rose-600 font-semibold">Rejected</strong>.</p>
+                            </div>
+                            <div class="text-right hidden md:block">
+                                <span class="handwritten text-indigo-600 text-lg font-bold">Slide to experiment! &darr;</span>
+                            </div>
+                        </div>
+
+                        <!-- Slider -->
+                        <div class="w-full mt-4">
+                            <div class="block md:hidden mb-2 text-left">
+                                <span class="handwritten text-indigo-600 text-sm font-bold">Slide to experiment! &darr;</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-sm text-slate-600 font-semibold">0.00 (Lenient)</span>
+                                <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2.5 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
+                                <span class="text-sm text-slate-600 font-semibold">1.00 (Strict)</span>
+                            </div>
+                        </div>
                     </div>
-                    <!-- 'Slide to experiment' positioned nicely above the slider on desktop -->
-                    <div class="text-right hidden md:block">
-                        <span class="handwritten text-indigo-600 text-lg font-bold">Slide to experiment! &darr;</span>
+
+                    <!-- Live Movement Explainer Log -->
+                    <div class="mt-6 p-4 bg-indigo-50/50 border border-indigo-100/80 rounded-xl text-sm text-indigo-950 font-medium relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-indigo-600"></div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 block mb-1">Live Impact Explainer:</span>
+                        <p id="sliderMovementLog" class="leading-relaxed">Slide the threshold to see instant trade-offs, or select a Hiring Preset below to apply standard operational profiles.</p>
                     </div>
                 </div>
 
-                <!-- Slider Row -->
-                <div class="w-full">
-                    <!-- 'Slide to experiment' visible stacked on mobile screens -->
-                    <div class="block md:hidden mb-2 text-left">
-                        <span class="handwritten text-indigo-600 text-sm font-bold">Slide to experiment! &darr;</span>
+                <!-- Right Column: Hiring Presets -->
+                <div class="lg:col-span-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base mb-1">Hiring Preset Scenarios</h3>
+                        <p class="text-xs text-slate-500 mb-4">Instantly trigger typical business trade-offs with custom thresholds.</p>
+                        
+                        <div class="grid grid-cols-3 gap-2">
+                            <!-- Preset 1: Campus Hiring -->
+                            <button id="preset-campus" onclick="selectPreset('campus', 0.60)" class="preset-btn flex flex-col items-center justify-center p-3 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all text-center group">
+                                <span class="text-xl mb-1 group-hover:scale-110 transition-transform">🎓</span>
+                                <span class="text-xs font-bold text-slate-800">Campus</span>
+                                <span class="text-[10px] text-slate-400 font-mono mt-0.5">θ = 0.60</span>
+                            </button>
+                            
+                            <!-- Preset 2: Executive -->
+                            <button id="preset-executive" onclick="selectPreset('executive', 0.80)" class="preset-btn flex flex-col items-center justify-center p-3 rounded-xl border border-indigo-600 bg-indigo-50/50 ring-2 ring-indigo-600/20 transition-all text-center group">
+                                <span class="text-xl mb-1 group-hover:scale-110 transition-transform">👔</span>
+                                <span class="text-xs font-bold text-slate-800">Executive</span>
+                                <span class="text-[10px] text-slate-400 font-mono mt-0.5">θ = 0.80</span>
+                            </button>
+
+                            <!-- Preset 3: Startup -->
+                            <button id="preset-startup" onclick="selectPreset('startup', 0.90)" class="preset-btn flex flex-col items-center justify-center p-3 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition-all text-center group">
+                                <span class="text-xl mb-1 group-hover:scale-110 transition-transform">🚀</span>
+                                <span class="text-xs font-bold text-slate-800">Startup</span>
+                                <span class="text-[10px] text-slate-400 font-mono mt-0.5">θ = 0.90</span>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm text-slate-600 font-semibold">0.00 (Lenient)</span>
-                        <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.80" class="w-full h-2.5 bg-slate-300 rounded-lg appearance-none cursor-pointer accent-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2">
-                        <span class="text-sm text-slate-600 font-semibold">1.00 (Strict)</span>
+
+                    <!-- Preset Rationale Explanation -->
+                    <div id="presetRationalePanel" class="mt-4 p-3.5 bg-amber-50/50 border border-amber-100 rounded-xl text-xs text-amber-900 leading-relaxed">
+                        <strong>Hiring Profile Active:</strong> Select any preset scenario from the buttons above to load standard candidate thresholds and read the operational rationale.
                     </div>
                 </div>
+
             </div>
         </div>
 
-        <!-- NEW Interactive Recruiter Scenarios Challenges -->
+        <!-- Interactive Recruiter Scenarios Challenges -->
         <section class="bg-indigo-950 text-slate-100 p-6 md:p-8 rounded-2xl border border-indigo-900 shadow-md mb-8">
             <div class="flex items-center gap-3 mb-6">
                 <!-- Sketched checklist icon directly paying homage to priorities/roadmap card in order in chaos.jpg -->
@@ -407,8 +454,11 @@
         
         document.getElementById('poolCount').innerText = candidates.length;
 
+        // Track threshold starting positions to display precise delta explanations on drag
+        let startingThreshold = 0.80;
+
         // Dynamic Table Row Color Mapping based on Active State Classification
-        function updateSimulation() {
+        function updateSimulation(triggeredByPreset = false, previousPresetVal = null) {
             const threshold = parseFloat(slider.value);
             thresholdValDisplay.innerText = threshold.toFixed(2);
 
@@ -492,6 +542,58 @@
                 insight = "<strong>Balanced Target Zone:</strong> Around the 0.75-0.80 threshold mark, the system balances recruiter scheduling capacity with talent pipeline yield, creating a more stable F1 Metric.";
             }
             document.getElementById('dynamicInsight').innerHTML = insight;
+
+            // Generate the dynamic movement log explanation sentence
+            const baseVal = triggeredByPreset ? previousPresetVal : startingThreshold;
+            const currentVal = threshold;
+            const logElement = document.getElementById('sliderMovementLog');
+
+            if (currentVal > baseVal) {
+                logElement.innerHTML = `You increased the threshold from <strong class="text-indigo-700">${baseVal.toFixed(2)}</strong> to <strong class="text-indigo-700">${currentVal.toFixed(2)}</strong>. The AI became more selective. False positives decreased, but false negatives increased, reducing recall.`;
+            } else if (currentVal < baseVal) {
+                logElement.innerHTML = `You decreased the threshold from <strong class="text-indigo-700">${baseVal.toFixed(2)}</strong> to <strong class="text-indigo-700">${currentVal.toFixed(2)}</strong>. The AI became more lenient. False negatives decreased, but false positives increased, reducing precision.`;
+            } else {
+                logElement.innerHTML = `Slide the threshold to see instant trade-offs, or select a Hiring Preset below to apply standard operational profiles.`;
+            }
+        }
+
+        // Handler for the hiring presets selection
+        function selectPreset(presetName, targetThreshold) {
+            const previousVal = parseFloat(slider.value);
+            slider.value = targetThreshold;
+
+            // Reset selection style states of all preset buttons
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600/20');
+                btn.classList.add('border-slate-200', 'bg-white');
+            });
+
+            // Highlight the active selection
+            const activeBtn = document.getElementById(`preset-${presetName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('border-slate-200', 'bg-white');
+                activeBtn.classList.add('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600/20');
+            }
+
+            // Provide preset scenario contextual explanation rationale
+            const rationalePanel = document.getElementById('presetRationalePanel');
+            let rationaleText = "";
+
+            if (presetName === 'campus') {
+                rationaleText = "<strong>🎓 Campus Hiring Profile:</strong> Screeners need lenient thresholds to cast a wide, discovery-focused net over thousands of raw applications. Low False Negatives mean no hidden gems are prematurely rejected.";
+            } else if (presetName === 'executive') {
+                rationaleText = "<strong>👔 Executive Hiring Profile:</strong> High precision but reasonable recall. Every applicant is rare and highly vetted. A balanced focus prevents wasting leadership cycles without losing prime talent.";
+            } else if (presetName === 'startup') {
+                rationaleText = "<strong>🚀 Startup Hiring Profile:</strong> Hyper-strict filter structure. With minimal engineer hours to spare, every shortlist recommendation must match. Minimizing False Positives overrides everything.";
+            }
+
+            rationalePanel.innerHTML = rationaleText;
+
+            // Trigger the simulation calculation and update comparing against the previous value
+            updateSimulation(true, previousVal);
+
+            // Re-anchor starting reference for subsequent slide drags
+            startingThreshold = targetThreshold;
         }
 
         // Recruiter scenario challenges game mechanics
@@ -513,9 +615,13 @@
                     feedbackRecall.className = "mt-4 p-3 rounded-lg text-xs bg-emerald-950/80 border border-emerald-800 text-emerald-200";
                     feedbackRecall.innerHTML = "<strong>Correct! 🎉</strong> Switch to High Recall. Since there is no time constraint, you want to catch 100% of the qualified pool (0 False Negatives). Automatically shifting threshold to <strong class='underline'>0.55</strong> to display how high recall captures everyone!";
                     
-                    // Automatically adjust the threshold
+                    // Clear the presets selected states as the user triggered a lesson override
+                    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600/20'));
+                    
+                    const prevVal = parseFloat(slider.value);
                     slider.value = 0.55;
-                    updateSimulation();
+                    updateSimulation(true, prevVal);
+                    startingThreshold = 0.55;
                 } else {
                     const wrongBtn = choice === 'precision' ? 'btn-sc1-prec' : 'btn-sc1-f1';
                     document.getElementById(wrongBtn).className = "w-full text-left py-2 px-3 text-xs rounded-lg border border-rose-500 bg-rose-950/80 text-rose-200 font-semibold transition-colors";
@@ -532,9 +638,13 @@
                     feedbackPrecision.className = "mt-4 p-3 rounded-lg text-xs bg-emerald-950/80 border border-emerald-800 text-emerald-200";
                     feedbackPrecision.innerHTML = "<strong>Correct! 🎉</strong> Switch to High Precision. With only 2 interview slots, every single shortlist choice must be correct (0 False Positives). Shifting threshold to <strong class='underline'>0.90</strong> to display how strict filters save precious developer time!";
                     
-                    // Automatically adjust the threshold
+                    // Clear the presets selected states as the user triggered a lesson override
+                    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600/20'));
+
+                    const prevVal = parseFloat(slider.value);
                     slider.value = 0.90;
-                    updateSimulation();
+                    updateSimulation(true, prevVal);
+                    startingThreshold = 0.90;
                 } else {
                     const wrongBtn = choice === 'recall' ? 'btn-sc2-rec' : 'btn-sc2-f1';
                     document.getElementById(wrongBtn).className = "w-full text-left py-2 px-3 text-xs rounded-lg border border-rose-500 bg-rose-950/80 text-rose-200 font-semibold transition-colors";
@@ -546,7 +656,13 @@
 
         // Active dragging animations (changes color palette of metrics to trigger UI engagement)
         slider.addEventListener('mousedown', () => {
+            startingThreshold = parseFloat(slider.value);
             metricsTexts.forEach(el => el.classList.add('text-indigo-600'));
+            // Deselect custom scenario buttons since user is overriding preset coordinates manually
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600/20');
+                btn.classList.add('border-slate-200', 'bg-white');
+            });
         });
         
         slider.addEventListener('mouseup', () => {
@@ -554,7 +670,12 @@
         });
         
         slider.addEventListener('touchstart', () => {
+            startingThreshold = parseFloat(slider.value);
             metricsTexts.forEach(el => el.classList.add('text-indigo-600'));
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('border-indigo-600', 'bg-indigo-50/50', 'ring-2', 'ring-indigo-600/20');
+                btn.classList.add('border-slate-200', 'bg-white');
+            });
         });
         
         slider.addEventListener('touchend', () => {
@@ -562,11 +683,12 @@
         });
 
         // Event listener 'input' updates continuously on drag frame-by-frame
-        slider.addEventListener('input', updateSimulation);
+        slider.addEventListener('input', () => updateSimulation(false));
         
-        // Render system values on mount
-        window.addEventListener('DOMContentLoaded', updateSimulation);
+        // Render system values on mount (Initial Default is Executive Profile - 0.80)
+        window.addEventListener('DOMContentLoaded', () => {
+            selectPreset('executive', 0.80);
+        });
     </script>
 </body>
 </html>
-
